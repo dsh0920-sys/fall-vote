@@ -16,7 +16,7 @@
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="2026 가을 행사 선호도 조사">
 <meta property="og:title" content="올가을, 우리 어떻게 보낼까요? 🍁">
-<meta property="og:description" content="🏃 운동회 vs 🍂 소풍 · 더 끌리는 쪽에 한 표! 익명 투표, 10초면 끝나요. (11월 첫째 주 진행)">
+<meta property="og:description" content="🏃 운동회 vs 🍂 소풍 · 더 끌리는 쪽에 한 표! 익명 투표, 10초면 끝나요. ⏰ 9월 17일(목) 낮 12시 마감">
 <meta property="og:url" content="https://dsh0920-sys.github.io/fall-vote/">
 <meta property="og:image" content="https://dsh0920-sys.github.io/fall-vote/og.png">
 <meta property="og:image:width" content="1200">
@@ -89,6 +89,7 @@
   @media (max-width:640px){.lead br{display:none}}
   .rules{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:18px}
   .rules span{font-size:12.5px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink-2);display:inline-flex;align-items:center;gap:5px}
+  .rules .due{border-color:var(--persimmon);background:var(--tint-1);color:var(--persimmon);font-weight:700}
 
   /* ── 단계 표시 ── */
   .steps{position:relative;z-index:1;display:flex;justify-content:center;gap:0;margin:26px auto 22px;max-width:420px}
@@ -198,7 +199,7 @@
     <div class="eyebrow">2026 가을 행사 선호도 조사</div>
     <h1>올가을, 우리 <em>어떻게</em> 보낼까요?</h1>
     <p class="lead">성공적인 가을 행사 진행을 위해 여러분의 의견을 듣습니다.<br>두 가지 중 더 끌리는 쪽에 투표해 주세요. 많은 표를 받은 쪽으로 진행됩니다.</p>
-    <div class="rules"><span>📅 11월 첫째 주 진행</span><span>🙋 1인 1표</span><span>🔒 익명 투표</span><span>⏱ 소요 시간 10초</span></div>
+    <div class="rules"><span class="due">⏰ 9월 17일(목) 낮 12시 투표 마감</span><span>📅 11월 첫째 주 진행</span><span>🙋 1인 1표</span><span>🔒 익명 투표</span><span>⏱ 소요 시간 10초</span></div>
   </header>
 
   <nav class="steps" id="steps" aria-label="진행 단계">
@@ -329,13 +330,13 @@
         </svg>
       </div>
       <div class="body">
-        <div class="tag">OPTION 2 · 목포 바다로 떠나는 하루</div>
+        <div class="tag">OPTION 2 · 가을 정취 듬뿍, 느긋한 하루</div>
         <h2>추계 야외 나들이 (소풍)</h2>
-        <p class="desc">케이블카에서 목포 바다를 내려다보고, 평화광장을 천천히 걷고, 맛있는 한 끼로 마무리합니다. 몸은 쉬고 마음은 채우는 가을 나들이입니다.</p>
+        <p class="desc">단풍 물든 가을 명소로 함께 떠나 천천히 걷고, 맛있는 한 끼 먹고, 사진 한 장 남기는 하루. 몸은 쉬고 마음은 채우는 나들이입니다.</p>
         <ul class="points">
-          <li>케이블카 타고 바다 위 한 바퀴</li>
-          <li>평화광장 산책 · 인생샷 타임</li>
-          <li>목포 맛있는 식사, 체력 부담 없이 누구나</li>
+          <li>가을 명소 나들이 · 가벼운 산책</li>
+          <li>맛있는 식사 · 인생샷 타임</li>
+          <li>체력 부담 없이 누구나 참여, 장소는 투표 후 공지</li>
         </ul>
         <button class="vote" type="button">🍂 소풍에 한 표</button>
         <div class="why" hidden>

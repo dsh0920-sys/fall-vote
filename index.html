@@ -150,6 +150,14 @@
   }
   .reasons label.on{border-color:var(--accent);background:var(--tint);font-weight:600}
   .reasons input[type=radio]{accent-color:var(--accent);margin:0;width:17px;height:17px;flex:none}
+  .teams{display:flex;gap:8px}
+  .teams label{
+    flex:1;position:relative;display:flex;justify-content:center;align-items:center;min-height:44px;padding:8px 6px;border:1.5px solid var(--line);border-radius:13px;cursor:pointer;
+    font-size:14px;font-weight:600;color:var(--ink-2);background:var(--ground);transition:border-color .15s,background .15s,color .15s;-webkit-tap-highlight-color:transparent;
+  }
+  .teams input[type=radio]{position:absolute;opacity:0;width:0;height:0;margin:0}
+  .teams label.on{border-color:var(--accent);background:var(--accent);color:#fff}
+  .teams label:has(input:focus-visible){outline:3px solid var(--ginkgo);outline-offset:2px}
   .etc{padding:11px 13px;border:1.5px solid var(--line);border-radius:13px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px;width:100%}
   .etc[hidden]{display:none}
   .etc:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--tint)}
@@ -204,7 +212,7 @@
 
   <nav class="steps" id="steps" aria-label="진행 단계">
     <div class="step now" data-step="1"><i>1</i>고르기</div>
-    <div class="step" data-step="2"><i>2</i>이유</div>
+    <div class="step" data-step="2"><i>2</i>팀·이유</div>
     <div class="step" data-step="3"><i>3</i>완료</div>
   </nav>
 
@@ -270,6 +278,12 @@
         </ul>
         <button class="vote" type="button">🏃 운동회에 한 표</button>
         <div class="why" hidden>
+          <div class="why-title">소속팀은요?</div>
+          <div class="teams">
+            <label><input type="radio" name="team1" value="DRTV A"><span>DRTV A</span></label>
+            <label><input type="radio" name="team1" value="DRTV B"><span>DRTV B</span></label>
+            <label><input type="radio" name="team1" value="CJOS B"><span>CJOS B</span></label>
+          </div>
           <div class="why-title">운동회를 고른 이유는요?<small>(하나만 선택)</small></div>
           <div class="reasons">
             <label><input type="radio" name="why1" value="몸을 움직이는 활동이 좋아서"><span>몸을 움직이는 활동이 좋아서</span></label>
@@ -340,6 +354,12 @@
         </ul>
         <button class="vote" type="button">🍂 소풍에 한 표</button>
         <div class="why" hidden>
+          <div class="why-title">소속팀은요?</div>
+          <div class="teams">
+            <label><input type="radio" name="team2" value="DRTV A"><span>DRTV A</span></label>
+            <label><input type="radio" name="team2" value="DRTV B"><span>DRTV B</span></label>
+            <label><input type="radio" name="team2" value="CJOS B"><span>CJOS B</span></label>
+          </div>
           <div class="why-title">소풍을 고른 이유는요?<small>(하나만 선택)</small></div>
           <div class="reasons">
             <label><input type="radio" name="why2" value="경쟁 없이 편하게 쉬고 싶어서"><span>경쟁 없이 편하게 쉬고 싶어서</span></label>
@@ -376,7 +396,8 @@
   const FORM = {
     url: "https://docs.google.com/forms/d/e/1FAIpQLSf1vxyRxr9n0YywiyLks1C_w3gKnxaCDvSBwiZhXq-RkYNZWA/formResponse",
     choiceEntry: "entry.1757366261",
-    reasonEntry: "entry.645972807"
+    reasonEntry: "entry.645972807",
+    teamEntry: "entry.1134525325"  // 폼의 "소속팀" 객관식 질문(옵션: DRTV A / DRTV B / CJOS B)
   };
   // 폼의 객관식 옵션 문구와 정확히 같아야 집계된다.
   const FORM_VALUES = { "운동회": "가을 사내 명랑 운동회", "소풍": "추계 야외 나들이 (소풍)" };
@@ -392,10 +413,11 @@
   function setStep(n){
     steps.forEach(s => { const k = +s.dataset.step; s.classList.toggle('now', k === n); s.classList.toggle('ok', k < n); });
   }
-  function showDone(choice, reason, already){
+  function showDone(choice, reason, already, team){
     const pick = $('#pick');
     pick.style.setProperty('--pick-accent', ACCENT[choice] || 'var(--persimmon)');
-    pick.innerHTML = '<b></b><span class="sep">·</span><span></span>';
+    pick.innerHTML = '<span class="team"></span><b></b><span class="sep">·</span><span></span>';
+    pick.querySelector('.team').textContent = team ? team + ' · ' : '';
     pick.querySelector('b').textContent = choice;
     pick.querySelector('span:last-child').textContent = reason;
     if (already) $('#done-title').textContent = '이미 투표해 주셨습니다';
@@ -405,7 +427,7 @@
   }
   try {
     const prev = JSON.parse(localStorage.getItem(DONE_KEY) || 'null');
-    if (prev && prev.choice) showDone(prev.choice, prev.reason, true);
+    if (prev && prev.choice) showDone(prev.choice, prev.reason, true, prev.team);
   } catch (e) {}
   $('#redo').addEventListener('click', () => {
     try { localStorage.removeItem(DONE_KEY); } catch (e) {}
@@ -415,35 +437,47 @@
   cards.forEach(card => {
     const why = card.querySelector('.why'), submit = card.querySelector('.submit'), etc = card.querySelector('.etc');
     const labels = [...card.querySelectorAll('.reasons label')];
-    const radios = [...card.querySelectorAll('input[type=radio]')];
+    const radios = [...card.querySelectorAll('.reasons input[type=radio]')];
+    const teamLabels = [...card.querySelectorAll('.teams label')];
+    const teamRadios = [...card.querySelectorAll('.teams input[type=radio]')];
+    // 팀과 이유를 둘 다 골라야 "투표 완료"가 켜진다.
+    const refresh = () => { submit.disabled = !(teamRadios.some(t => t.checked) && radios.some(r => r.checked)); };
 
     card.querySelector('.vote').addEventListener('click', () => {
       cards.forEach(c => { c.classList.toggle('chosen', c === card); c.classList.toggle('dim', c !== card); });
-      why.hidden = false; submit.disabled = true; setStep(2);
+      why.hidden = false; refresh(); setStep(2);
       requestAnimationFrame(() => why.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
     });
     card.querySelector('.back').addEventListener('click', () => {
       cards.forEach(c => c.classList.remove('chosen', 'dim'));
-      why.hidden = true; radios.forEach(r => r.checked = false); labels.forEach(l => l.classList.remove('on'));
+      why.hidden = true;
+      radios.forEach(r => r.checked = false); labels.forEach(l => l.classList.remove('on'));
+      teamRadios.forEach(t => t.checked = false); teamLabels.forEach(l => l.classList.remove('on'));
       etc.hidden = true; etc.value = ''; setStep(1);
       card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+    teamRadios.forEach(t => t.addEventListener('change', () => {
+      teamLabels.forEach(l => l.classList.toggle('on', l.contains(t)));
+      refresh();
+    }));
     radios.forEach(r => r.addEventListener('change', () => {
       labels.forEach(l => l.classList.toggle('on', l.contains(r)));
       etc.hidden = r.value !== '기타'; if (!etc.hidden) etc.focus();
-      submit.disabled = false;
+      refresh();
     }));
     submit.addEventListener('click', () => {
-      const picked = radios.find(r => r.checked); if (!picked) return;
+      const picked = radios.find(r => r.checked), teamPicked = teamRadios.find(t => t.checked);
+      if (!picked || !teamPicked) return;
       const reason = picked.value === '기타' ? (etc.value.trim() || '기타') : picked.value;
-      const choice = card.dataset.choice;
+      const choice = card.dataset.choice, team = teamPicked.value;
       submit.disabled = true; submit.textContent = '전송 중…';
       const params = new URLSearchParams();
       params.set(FORM.choiceEntry, FORM_VALUES[choice]);
       params.set(FORM.reasonEntry, reason);
+      if (FORM.teamEntry) params.set(FORM.teamEntry, team);
       const finish = () => {
-        try { localStorage.setItem(DONE_KEY, JSON.stringify({ choice, reason, at: Date.now() })); } catch (e) {}
-        showDone(choice, reason, false);
+        try { localStorage.setItem(DONE_KEY, JSON.stringify({ choice, reason, team, at: Date.now() })); } catch (e) {}
+        showDone(choice, reason, false, team);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
       // 화면 전환 없이 조용히 구글폼에 기록. 전송이 안 되면 버튼을 되살리고 다시 누르게 안내한다.

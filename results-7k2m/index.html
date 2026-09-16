@@ -1,0 +1,291 @@
+<!doctype html>
+<!-- 가을 행사 투표 결과 페이지. 구글폼 응답 시트(링크 공개)를 읽어 실시간으로 집계해 보여준다. 투표 페이지와는 별도이며 링크로 연결돼 있지 않다. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>가을 행사 투표 결과</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#FBF4E8; --ground-2:#F6E9D6; --paper:#FFFDF9; --ink:#2B2320; --ink-2:#6E6057; --ink-3:#9A8C80; --line:#EADCC8;
+    --persimmon:#D2622A; --ginkgo:#E8B84A; --olive:#6F7F4A;
+    --tint-1:#FBEADF; --tint-2:#ECF0DE;
+    --shadow:0 20px 44px -24px rgba(90,50,20,.32);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#1E1816; --ground-2:#251D1A; --paper:#2B2320; --ink:#F4ECE1; --ink-2:#BFB1A3; --ink-3:#8D7F73; --line:#463A32;
+      --persimmon:#E9803F; --ginkgo:#E9C165; --olive:#96A86B;
+      --tint-1:#3A2A22; --tint-2:#2E3528;
+      --shadow:0 20px 44px -24px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#1E1816; --ground-2:#251D1A; --paper:#2B2320; --ink:#F4ECE1; --ink-2:#BFB1A3; --ink-3:#8D7F73; --line:#463A32;
+    --persimmon:#E9803F; --ginkgo:#E9C165; --olive:#96A86B;
+    --tint-1:#3A2A22; --tint-2:#2E3528;
+    --shadow:0 20px 44px -24px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;background-image:radial-gradient(900px 420px at 50% -80px,var(--ground-2),transparent 70%);min-height:100dvh}
+  button{font:inherit}
+  .wrap{max-width:900px;margin:0 auto;padding:32px 18px 56px}
+
+  .head{text-align:center;margin-bottom:26px}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.16em;color:var(--persimmon);font-weight:700;margin-bottom:12px}
+  .eyebrow::before,.eyebrow::after{content:"";width:22px;height:1px;background:currentColor;opacity:.6}
+  h1{font-family:"Gowun Batang",serif;font-weight:700;font-size:clamp(28px,5vw,40px);margin:0 0 14px;line-height:1.25;letter-spacing:-.01em}
+  .meta{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-2)}
+  .meta span{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);display:inline-flex;align-items:center;gap:6px}
+  .meta .total{border-color:var(--persimmon);color:var(--persimmon);font-weight:700;background:var(--tint-1)}
+  .meta button{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink-2);cursor:pointer}
+  .meta button:hover{border-color:var(--ink-3);color:var(--ink)}
+
+  .card{background:var(--paper);border:1.5px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px;margin-bottom:18px}
+  .card h2{font-family:"Gowun Batang",serif;font-size:19px;margin:0 0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .card h2 small{font-family:"Noto Sans KR",sans-serif;font-size:12px;font-weight:500;color:var(--ink-3)}
+
+  /* 운동회 vs 소풍 */
+  .race{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media (max-width:520px){.race{grid-template-columns:1fr}}
+  .side{border-radius:16px;padding:16px 18px;border:1.5px solid var(--line);position:relative}
+  .side.o1{background:var(--tint-1);--accent:var(--persimmon)} .side.o2{background:var(--tint-2);--accent:var(--olive)}
+  .side .name{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.04em}
+  .side .big{font-family:"Gowun Batang",serif;font-size:44px;font-weight:700;line-height:1.1;margin:4px 0 0}
+  .side .big small{font-family:"Noto Sans KR",sans-serif;font-size:15px;font-weight:500;color:var(--ink-2);margin-left:4px}
+  .side .pct{font-size:14px;color:var(--ink-2)}
+  .side.lead::after{content:"앞서는 중";position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent);color:#fff}
+  .side.tie::after{content:"동률";position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--ink-3);color:#fff}
+  .split{height:16px;border-radius:999px;overflow:hidden;display:flex;background:var(--line)}
+  .split i{display:block;height:100%;transition:width .5s ease}
+  .split .a{background:var(--persimmon)} .split .b{background:var(--olive)}
+
+  /* 팀별 */
+  .team{display:grid;grid-template-columns:96px 1fr 120px;gap:12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line);font-size:14px}
+  .team:first-of-type{border-top:0}
+  .team .tname{font-weight:700}
+  .team .tname small{display:block;font-weight:400;color:var(--ink-3);font-size:12px}
+  .team .bar{height:12px;border-radius:999px;overflow:hidden;display:flex;background:var(--line)}
+  .team .bar i{display:block;height:100%}
+  .team .bar .a{background:var(--persimmon)} .team .bar .b{background:var(--olive)}
+  .team .nums{text-align:right;font-size:13px;color:var(--ink-2);white-space:nowrap}
+  .team .nums b.a{color:var(--persimmon)} .team .nums b.b{color:var(--olive)}
+  @media (max-width:520px){.team{grid-template-columns:80px 1fr;} .team .nums{grid-column:1/-1;text-align:left}}
+
+  /* 이유 */
+  .reasons{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:640px){.reasons{grid-template-columns:1fr}}
+  .rlist h3{font-size:14px;margin:0 0 10px;font-weight:700}
+  .rlist h3.a{color:var(--persimmon)} .rlist h3.b{color:var(--olive)}
+  .r{margin-bottom:9px;font-size:13.5px}
+  .r .lbl{display:flex;justify-content:space-between;gap:8px;margin-bottom:3px}
+  .r .lbl span:last-child{color:var(--ink-3);flex:none}
+  .r .bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+  .r .bar i{display:block;height:100%;background:var(--persimmon)}
+  .rlist.b .r .bar i{background:var(--olive)}
+  .r.etc .lbl span:first-child{color:var(--ink-2);font-style:italic}
+
+  /* 최근 */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 8px;border-top:1px dashed var(--line);vertical-align:top}
+  th{border-top:0;color:var(--ink-3);font-weight:600;font-size:12px;letter-spacing:.04em}
+  td.time{white-space:nowrap;color:var(--ink-3);font-size:12.5px}
+  .chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700}
+  .chip.a{background:var(--tint-1);color:var(--persimmon)} .chip.b{background:var(--tint-2);color:var(--olive)}
+  .chip.t{background:var(--ground);color:var(--ink-2);border:1px solid var(--line);font-weight:600}
+  .table-wrap{overflow-x:auto}
+
+  .empty{text-align:center;color:var(--ink-3);padding:26px 0;font-size:14px}
+  .note{color:var(--ink-3);font-size:12.5px;text-align:center;margin-top:8px}
+  .setup{background:var(--paper);border:1.5px dashed var(--persimmon);border-radius:22px;padding:22px}
+  .setup h2{margin:0 0 10px;font-size:18px}
+  .setup ol{margin:0;padding-left:20px;font-size:14px;color:var(--ink-2)}
+  .setup li{margin-bottom:6px}
+  .err{background:var(--tint-1);border:1.5px solid var(--persimmon);color:var(--ink);border-radius:16px;padding:14px 18px;font-size:14px;margin-bottom:18px}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="eyebrow">2026 가을 행사 선호도 조사</div>
+    <h1>투표 결과</h1>
+    <div class="meta">
+      <span class="total" id="total">집계 중…</span>
+      <span id="deadline"></span>
+      <span id="updated">업데이트 —</span>
+      <button type="button" id="refresh">새로고침</button>
+    </div>
+  </header>
+
+  <div class="err" id="err" hidden></div>
+
+  <section class="setup" id="setup" hidden>
+    <h2>결과 시트가 아직 연결되지 않았습니다</h2>
+    <ol>
+      <li>구글폼 → 응답 탭 → 스프레드시트 아이콘 → 새 스프레드시트 만들기.</li>
+      <li>시트 오른쪽 위 공유 → 일반 액세스를 "링크가 있는 모든 사용자(뷰어)"로 변경.</li>
+      <li>시트 링크를 이 페이지의 <code>SHEET_URL</code>에 넣어 다시 올리기.</li>
+    </ol>
+  </section>
+
+  <div id="board" hidden>
+    <section class="card">
+      <h2>운동회 vs 소풍 <small id="valid-note"></small></h2>
+      <div class="race">
+        <div class="side o1" id="side1"><div class="name">🏃 가을 사내 명랑 운동회</div><div class="big"><span id="n1">0</span><small>표</small></div><div class="pct" id="p1">0%</div></div>
+        <div class="side o2" id="side2"><div class="name">🍂 추계 야외 나들이 (소풍)</div><div class="big"><span id="n2">0</span><small>표</small></div><div class="pct" id="p2">0%</div></div>
+      </div>
+      <div class="split"><i class="a" id="bar1" style="width:50%"></i><i class="b" id="bar2" style="width:50%"></i></div>
+    </section>
+
+    <section class="card">
+      <h2>팀별 <small>운동회 · 소풍</small></h2>
+      <div id="teams"></div>
+    </section>
+
+    <section class="card">
+      <h2>고른 이유</h2>
+      <div class="reasons">
+        <div class="rlist a"><h3 class="a">🏃 운동회를 고른 이유</h3><div id="r1"></div></div>
+        <div class="rlist b"><h3 class="b">🍂 소풍을 고른 이유</h3><div id="r2"></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>최근 투표 <small id="recent-note">최근 15건</small></h2>
+      <div class="table-wrap"><table><thead><tr><th>시각</th><th>팀</th><th>선택</th><th>이유</th></tr></thead><tbody id="recent"></tbody></table></div>
+    </section>
+    <p class="note">시트가 갱신되는 대로 1분마다 자동으로 다시 불러옵니다. 이 페이지는 투표 페이지에 연결돼 있지 않습니다.</p>
+  </div>
+</div>
+
+<script>
+  // 구글폼 응답 시트 링크. "링크가 있는 모든 사용자(뷰어)"로 공유돼 있어야 읽을 수 있다.
+  const SHEET_URL = "";
+  const DEADLINE = new Date("2026-09-17T12:00:00+09:00");
+  const OPT1 = "가을 사내 명랑 운동회", OPT2 = "추계 야외 나들이 (소풍)";
+  const TEAMS = ["DRTV A", "DRTV B", "CJOS B"];
+
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  // 시트 링크 → CSV 주소. 공개(링크 공유) 시트는 gviz 엔드포인트로 거의 실시간 CSV를 준다.
+  function csvUrl(u){
+    const m = u.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (!m) return u;
+    const gid = (u.match(/[#&?]gid=(\d+)/) || [])[1];
+    return `https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv${gid ? '&gid=' + gid : ''}&_=${Date.now()}`;
+  }
+  // 따옴표·쉼표·줄바꿈이 섞인 CSV를 안전하게 나눈다.
+  function parseCsv(text){
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++){
+      const c = text[i];
+      if (q){
+        if (c === '"'){ if (text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ','){ row.push(cell); cell = ''; }
+      else if (c === '\n' || c === '\r'){ if (c === '\r' && text[i+1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += c;
+    }
+    if (cell !== '' || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(r => r.some(v => v.trim() !== ''));
+  }
+  function findCol(header, keys, fallback){
+    const i = header.findIndex(h => keys.some(k => h.includes(k)));
+    return i >= 0 ? i : fallback;
+  }
+  function shortTime(s){
+    // "2026. 9. 16 오후 2:03:11" → "9/16 오후 2:03"
+    const m = s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\s*(오전|오후)?\s*(\d{1,2}):(\d{2})/);
+    if (m) return `${m[2]}/${m[3]} ${m[4] || ''} ${m[5]}:${m[6]}`.replace(/\s+/g, ' ').trim();
+    const d = new Date(s); if (!isNaN(d)) return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return s;
+  }
+
+  function render(rows){
+    if (rows.length < 2){ $('#total').textContent = '아직 투표가 없습니다'; $('#board').hidden = false; $('#teams').innerHTML = '<div class="empty">표가 들어오면 여기에 팀별로 나눠 보여드립니다.</div>'; $('#recent').innerHTML = ''; return; }
+    const header = rows[0].map(h => h.trim());
+    const cC = findCol(header, ['선호', '행사'], 1), cR = findCol(header, ['이유'], 2), cT = findCol(header, ['소속', '팀'], 3);
+    const votes = rows.slice(1).map(r => ({ time: r[0] || '', choice: (r[cC] || '').trim(), reason: (r[cR] || '').trim(), team: (r[cT] || '').trim() }))
+      .filter(v => v.choice === OPT1 || v.choice === OPT2);
+    const n1 = votes.filter(v => v.choice === OPT1).length, n2 = votes.length - n1, n = votes.length;
+    const p1 = n ? Math.round(n1 / n * 100) : 50, p2 = n ? 100 - p1 : 50;
+
+    $('#total').textContent = `총 ${n}표`;
+    $('#valid-note').textContent = rows.length - 1 !== n ? `유효 ${n}표 (전체 ${rows.length - 1}건)` : '';
+    $('#n1').textContent = n1; $('#n2').textContent = n2;
+    $('#p1').textContent = n ? `${p1}%` : '—'; $('#p2').textContent = n ? `${p2}%` : '—';
+    $('#bar1').style.width = (n ? p1 : 50) + '%'; $('#bar2').style.width = (n ? p2 : 50) + '%';
+    $('#side1').className = 'side o1' + (n && n1 > n2 ? ' lead' : n && n1 === n2 ? ' tie' : '');
+    $('#side2').className = 'side o2' + (n && n2 > n1 ? ' lead' : n && n1 === n2 ? ' tie' : '');
+
+    // 팀별
+    const teamNames = [...TEAMS, ...[...new Set(votes.map(v => v.team))].filter(t => t && !TEAMS.includes(t))];
+    if (votes.some(v => !v.team)) teamNames.push('');
+    $('#teams').innerHTML = teamNames.map(t => {
+      const tv = votes.filter(v => v.team === t), a = tv.filter(v => v.choice === OPT1).length, b = tv.length - a, tot = tv.length;
+      const pa = tot ? a / tot * 100 : 0, pb = tot ? b / tot * 100 : 0;
+      return `<div class="team"><div class="tname">${t ? esc(t) : '팀 미기재'}<small>${tot}표</small></div>
+        <div class="bar"><i class="a" style="width:${pa}%"></i><i class="b" style="width:${pb}%"></i></div>
+        <div class="nums"><b class="a">운동회 ${a}</b> · <b class="b">소풍 ${b}</b></div></div>`;
+    }).join('') || '<div class="empty">아직 표가 없습니다.</div>';
+
+    // 이유
+    const reasonList = (opt, el) => {
+      const sub = votes.filter(v => v.choice === opt);
+      const counts = {}; sub.forEach(v => { const k = v.reason || '(이유 없음)'; counts[k] = (counts[k] || 0) + 1; });
+      const items = Object.entries(counts).sort((x, y) => y[1] - x[1]);
+      const max = items[0] ? items[0][1] : 1;
+      el.innerHTML = items.map(([k, c]) => `<div class="r"><div class="lbl"><span>${esc(k)}</span><span>${c}표</span></div><div class="bar"><i style="width:${c / max * 100}%"></i></div></div>`).join('') || '<div class="empty">아직 없음</div>';
+    };
+    reasonList(OPT1, $('#r1')); reasonList(OPT2, $('#r2'));
+
+    // 최근
+    const recent = votes.slice(-15).reverse();
+    $('#recent').innerHTML = recent.map(v => `<tr><td class="time">${esc(shortTime(v.time))}</td><td><span class="chip t">${esc(v.team || '—')}</span></td><td><span class="chip ${v.choice === OPT1 ? 'a' : 'b'}">${v.choice === OPT1 ? '운동회' : '소풍'}</span></td><td>${esc(v.reason)}</td></tr>`).join('');
+    $('#recent-note').textContent = n > 15 ? `최근 15건 / 전체 ${n}건` : `전체 ${n}건`;
+    $('#board').hidden = false;
+  }
+
+  function deadlineText(){
+    const diff = DEADLINE - Date.now();
+    if (diff <= 0) return '⏰ 투표 마감됨 (9/17 낮 12시)';
+    const h = Math.floor(diff / 36e5), m = Math.floor(diff % 36e5 / 6e4);
+    return `⏰ 마감까지 ${h ? h + '시간 ' : ''}${m}분`;
+  }
+
+  async function load(){
+    $('#deadline').textContent = deadlineText();
+    if (!SHEET_URL){ $('#setup').hidden = false; $('#total').textContent = '시트 미연결'; return; }
+    try {
+      const res = await fetch(csvUrl(SHEET_URL), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if (/<html/i.test(text.slice(0, 200))) throw new Error('시트가 공개돼 있지 않습니다. 공유 → 링크가 있는 모든 사용자(뷰어)로 바꿔 주세요.');
+      render(parseCsv(text));
+      $('#err').hidden = true;
+      $('#updated').textContent = '업데이트 ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      $('#err').textContent = '결과를 불러오지 못했습니다. ' + (e.message || e);
+      $('#err').hidden = false;
+      $('#total').textContent = '불러오기 실패';
+    }
+  }
+  window.__renderCsv = text => render(parseCsv(text)); // 시험용
+  $('#refresh').addEventListener('click', load);
+  load();
+  setInterval(load, 60000);
+  setInterval(() => { $('#deadline').textContent = deadlineText(); }, 30000);
+</script>
+</body>
+</html>

@@ -445,10 +445,11 @@
         showDone(choice, reason, false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
-      // 화면 전환 없이 조용히 구글폼에 기록. 전송이 막히면 구글 확인 화면으로 대신 이동한다.
-      fetch(FORM.url, { method: 'POST', mode: 'no-cors', body: params })
-        .then(finish)
-        .catch(() => { location.href = FORM.url + '?' + params.toString() + '&submit=Submit'; });
+      // 화면 전환 없이 조용히 구글폼에 기록. 전송이 안 되면 버튼을 되살리고 다시 누르게 안내한다.
+      const fail = () => { submit.disabled = false; submit.textContent = '투표 완료'; say('전송이 안 됐어요. 잠시 후 다시 눌러주세요.'); };
+      try {
+        fetch(FORM.url, { method: 'POST', mode: 'no-cors', body: params }).then(finish).catch(fail);
+      } catch (e) { fail(); }
     });
   });
 </script>
